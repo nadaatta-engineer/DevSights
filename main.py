@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from google import genai
-from config import Config
+import os 
 
-key = Config["API_KEY"]
+key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key = key)
 
 app = FastAPI()
