@@ -3,8 +3,6 @@ from pydantic import BaseModel
 from google import genai
 from config import Config
 
-
-
 key = Config["API_KEY"]
 client = genai.Client(api_key = key)
 
@@ -20,7 +18,11 @@ def error_analysis(data : log):
     response = client.models.generate_content(
         model = "gemini-3.5-flash",
         contents=f"""
+
     You are an expert AI DevOps investigator. Your task is to perform Root Cause Correlation AND provide an actionable fix.
+
+    You are an expert AI DevOps investigator. Your task is to perform Root Cause Correlation.
+
     
     Here is the Error Log:
     {data.error_log}
@@ -44,7 +46,6 @@ def error_analysis(data : log):
     """
         )
     return {"analysis": response.text}
-
 
     
     
