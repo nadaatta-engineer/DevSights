@@ -1,0 +1,64 @@
+Models we need :
+    inputs:
+        1- CodeChange:
+            *RepoName --> str
+            *Branch --> str
+            *Modified_files --> list of str
+            *Commit_message --> str
+        
+        2- CommitInfo:
+            *commit_id --> str
+            *author --> str
+            *commit_message --> str
+            *changed_lines --> list[str]
+            
+        2- ErrorLog:
+            *build_id --> str
+            *error_log --> str
+            *recent_commit --> CommitInfo
+            
+        3- RemediationRequest:
+            *build_id --> str
+            *proposed_code --> str
+            *commit_message --> str
+            
+    outputs:
+        1-TestResponse:
+            *recommended_tests --> list[str]
+            skippes_tests_count --> int
+            time_saved --> double
+            
+        2-RootCause:
+            *responsible_commit --> CommitInfo
+            *suspected_line --> str
+            *reason --> str
+            *solution --> str
+            *is_code_fix --> bool
+            *recommended_code --> optionla[str] --> none #it may not exist
+            
+        3-RemediationResponse:
+           *success --> bool
+           *pr_url --> optional[str] --> none #it may not exist
+           *message --> str
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+           
+        
+    
