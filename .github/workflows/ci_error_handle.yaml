@@ -1,4 +1,4 @@
-name: CI Error Handler
+مname: CI Error Handler
 
 on:
   push:
@@ -26,7 +26,6 @@ jobs:
     - name: Run Tests / Build
       run: |
         echo "Running your build and tests..."
-        exit 1  # خطأ متعمد لاختبار عمل الـ Workflow
 
     - name: Send Error Log to Railway Server
       if: failure()
