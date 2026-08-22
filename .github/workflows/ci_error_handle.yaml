@@ -8,13 +8,13 @@ on:
 
 jobs:
   build-and-test:
-  - runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up Python (أو بيئة العمل الخاصة بك)
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.10'
@@ -22,30 +22,24 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        # pip install -r requirements.txt (أضف أوامر البناء أو الاختبار هنا)
 
     - name: Run Tests / Build
       run: |
         echo "Running your build and tests..."
-        # ضع هنا أمر الاختبار الذي قد يتسبب في حدوث خطأ للإختبار
-        # exit 1  <-- تجربة لإحداث خطأ متعمد
+        exit 1  # خطأ متعمد لاختبار عمل الـ Workflow
 
-    # هذه الخطوة تعمل فقط إذا فشلت إحدى الخطوات السابقة
     - name: Send Error Log to Railway Server
       if: failure()
       env:
-        RAILWAY_SERVER_URL: "devsights-production.up.railway.app/errorAnalyze"
+        RAILWAY_SERVER_URL: "https://devsights-production.up.railway.app/errorAnalyze"
       run: |
-        # جمع بيانات الـ Commit الحالي
         COMMIT_ID="${{ github.sha }}"
         AUTHOR="${{ github.actor }}"
         COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
         BUILD_ID="${{ github.run_id }}"
         
-        # تجهيز محتوى الخطأ (يمكنك تخصيصه أو التقاط سجلات أحدث خطأ)
         ERROR_LOG="Build failed during GitHub Actions workflow execution for commit ${{ github.sha }}."
 
-        # بناء هيكل الـ JSON المطابق لـ FailureLog في الكود لديك
         PAYLOAD=$(jq -n \
           --arg build_id "$BUILD_ID" \
           --arg error_log "$ERROR_LOG" \
@@ -65,7 +59,6 @@ jobs:
 
         echo "Sending payload to server..."
         
-        # إرسال الطلب واستقبال الرد
         RESPONSE=$(curl -s -X POST "$RAILWAY_SERVER_URL" \
           -H "Content-Type: application/json" \
           -d "$PAYLOAD")
