@@ -1,0 +1,28 @@
+name: 'FastAPI Tool Action'
+description: 'Runs my custom FastAPI server tool in GitHub Actions'
+
+inputs:
+  port:
+    description: 'Port to run the FastAPI server on'
+    required: false
+    default: '8000'
+
+runs:
+  using: 'composite'
+  steps:
+    # 1. تثبيت بايثون والاعتمادات
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+      shell: bash
+
+    # 2. تشغيل السيرفر في الخلفية مثلاً
+    - name: Start FastAPI Server
+      run: |
+        nohup python ${{ github.action_path }}/main.py &
+        sleep 3 # للتأكد من أن السيرفر اشتغل
+      shell: bash
