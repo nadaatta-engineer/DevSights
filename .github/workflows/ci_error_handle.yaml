@@ -34,7 +34,7 @@ jobs:
     - name: Send Error Log to Railway Server
       if: failure()
       env:
-        RAILWAY_SERVER_URL: "https://your-railway-app-url.railway.app/errorAnalyze"
+        RAILWAY_SERVER_URL: "devsights-production.up.railway.app/errorAnalyze"
       run: |
         # جمع بيانات الـ Commit الحالي
         COMMIT_ID="${{ github.sha }}"
