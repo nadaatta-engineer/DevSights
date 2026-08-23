@@ -5,7 +5,7 @@ on:
 
 # Railway URL بتاع DevSights
 env:
-  DEVSIGHTS_API_URL: https://https://devsights-production.up.railway.app
+  DEVSIGHTS_API_URL: https://devsights-production.up.railway.app
 
 permissions:
   contents: read
