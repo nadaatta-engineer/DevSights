@@ -2,9 +2,10 @@ name: DevSights
 
 on:
   workflow_call:
-    secrets:
-      DEVSIGHTS_API_URL:
-        required: true
+
+# Railway URL بتاع DevSights
+env:
+  DEVSIGHTS_API_URL: https://YOUR-RAILWAY-URL.up.railway.app
 
 permissions:
   contents: read
@@ -38,11 +39,10 @@ jobs:
         run: |
           pytest 2>&1 | tee test_output.txt
 
-      # 5. Get commit information and send the failure to DevSights
+      # 5. Get commit information and send failure to DevSights
       - name: Send failure to DevSights
         if: steps.tests.outcome == 'failure'
         env:
-          DEVSIGHTS_API_URL: ${{ secrets.DEVSIGHTS_API_URL }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           COMMIT_SHA: ${{ github.sha }}
@@ -57,16 +57,16 @@ jobs:
           commit_sha = os.environ["COMMIT_SHA"]
           github_token = os.environ["GH_TOKEN"]
 
-          # --------------------------------------------------
-          # Read the pytest error
-          # --------------------------------------------------
+          # ---------------------------------------------
+          # Read pytest output
+          # ---------------------------------------------
 
           with open("test_output.txt", "r", encoding="utf-8") as file:
               error_log = file.read()
 
-          # --------------------------------------------------
+          # ---------------------------------------------
           # Get commit information from GitHub API
-          # --------------------------------------------------
+          # ---------------------------------------------
 
           api_url = (
               f"https://api.github.com/repos/"
@@ -88,9 +88,9 @@ jobs:
                   response.read().decode("utf-8")
               )
 
-          # --------------------------------------------------
+          # ---------------------------------------------
           # Extract commit information
-          # --------------------------------------------------
+          # ---------------------------------------------
 
           commit_message = commit_data["commit"]["message"]
 
@@ -104,14 +104,14 @@ jobs:
               if patch:
                   for line in patch.splitlines():
 
-                      # Added lines only
+                      # Get added lines only
                       # Ignore the +++ file header
                       if line.startswith("+") and not line.startswith("+++"):
                           changed_lines.append(line[1:])
 
-          # --------------------------------------------------
-          # Create the FailureLog
-          # --------------------------------------------------
+          # ---------------------------------------------
+          # Create FailureLog
+          # ---------------------------------------------
 
           failure_data = {
               "build_id": os.environ["GITHUB_RUN_ID"],
@@ -126,17 +126,17 @@ jobs:
               }
           }
 
-          # --------------------------------------------------
+          # ---------------------------------------------
           # Convert to JSON
-          # --------------------------------------------------
+          # ---------------------------------------------
 
           json_data = json.dumps(
               failure_data
           ).encode("utf-8")
 
-          # --------------------------------------------------
-          # Send FailureLog to DevSights
-          # --------------------------------------------------
+          # ---------------------------------------------
+          # Send JSON to DevSights
+          # ---------------------------------------------
 
           request = urllib.request.Request(
               url=os.environ["DEVSIGHTS_API_URL"] + "/errorAnalyze",
@@ -167,7 +167,8 @@ jobs:
 
           PY
 
-      # 6. Keep the workflow failed if tests failed
+      # 6. Keep the workflow failed
+      # if the user's tests failed
       - name: Mark workflow as failed
         if: steps.tests.outcome == 'failure'
         run: exit 1
