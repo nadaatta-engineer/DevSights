@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DevSights Dashboard</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .value {
+            margin-top: 5px;
+            color: #444;
+        }
+
+        .code {
+            background: #1e1e1e;
+            color: #eee;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #ffe5e5;
+            color: #c00;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #c00;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>DevSights</h1>
+
+    <div class="subtitle">
+        AI-Powered CI/CD Failure Analysis
+    </div>
+
+    <div id="dashboard">
+        Loading analyses...
+    </div>
+
+</div>
+
+
+<script>
+
+const API_URL =
+    "https://devsights-production.up.railway.app/analyses";
+
+
+async function loadAnalyses() {
+
+    const dashboard =
+        document.getElementById("dashboard");
+
+    try {
+
+        const response =
+            await fetch(API_URL);
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to fetch analyses"
+            );
+        }
+
+        const analyses =
+            await response.json();
+
+
+        if (analyses.length === 0) {
+
+            dashboard.innerHTML = `
+                <div class="card">
+                    No failure analyses found.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        dashboard.innerHTML = "";
+
+
+        analyses.reverse().forEach(analysis => {
+
+            const card =
+                document.createElement("div");
+
+            card.className = "card";
+
+
+            card.innerHTML = `
+
+                <div class="title">
+                    Build #${analysis.build_id}
+                </div>
+
+                <span class="status">
+                    Test Failed
+                </span>
+
+
+                <div class="label">
+                    Responsible Commit
+                </div>
+
+                <div class="value">
+                    ${analysis.commit_message}
+                </div>
+
+
+                <div class="label">
+                    Author
+                </div>
+
+                <div class="value">
+                    ${analysis.author}
+                </div>
+
+
+                <div class="label">
+                    Commit ID
+                </div>
+
+                <div class="value">
+                    ${analysis.commit_id}
+                </div>
+
+
+                <div class="label">
+                    Suspected Line
+                </div>
+
+                <div class="value">
+                    ${analysis.suspected_line}
+                </div>
+
+
+                <div class="label">
+                    Root Cause
+                </div>
+
+                <div class="value">
+                    ${analysis.reason}
+                </div>
+
+
+                <div class="label">
+                    Suggested Solution
+                </div>
+
+                <div class="value">
+                    ${analysis.solution}
+                </div>
+
+
+                ${
+                    analysis.recommended_code
+                    ?
+                    `
+                    <div class="label">
+                        Recommended Code
+                    </div>
+
+                    <div class="code">
+                        ${analysis.recommended_code}
+                    </div>
+                    `
+                    :
+                    ""
+                }
+
+            `;
+
+
+            dashboard.appendChild(card);
+
+        });
+
+    }
+
+    catch (error) {
+
+        dashboard.innerHTML = `
+            <div class="error">
+                Could not load DevSights analyses.
+                <br><br>
+                ${error.message}
+            </div>
+        `;
+
+    }
+
+}
+
+
+loadAnalyses();
+
+</script>
+
+</body>
+
+</html>
