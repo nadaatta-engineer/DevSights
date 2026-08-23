@@ -1,4 +1,4 @@
-name: DevSights CI
+name: DevSights
 
 on:
   push:
