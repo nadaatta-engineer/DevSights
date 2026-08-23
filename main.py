@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from app.models.failure import FailureLog
+from app.models.commit import CommitInfo
+from app.models.response import RootCause
 from app.prompts.root_cause_prompt import build_root_cause_prompt
 from app.services.ai_analyzer import AIAnalyzer
-import json 
+import json
 
 app = FastAPI()
 
@@ -38,5 +40,4 @@ def analyze_error_logs(data: FailureLog):
         is_code_fix=data_dict.get("is_code_fix"),
         recommended_code=data_dict.get("recommended_code")
     )
-
     return cause
