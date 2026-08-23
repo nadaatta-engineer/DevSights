@@ -126,3 +126,20 @@ def get_analyses():
     finally:
 
         db.close()
+        
+@app.delete("/analyses")
+def delete_all_analyses():
+
+    db = SessionLocal()
+
+    try:
+        db.query(Analysis).delete()
+        db.commit()
+
+        return {
+            "success": True,
+            "message": "All analyses deleted"
+        }
+
+    finally:
+        db.close()
