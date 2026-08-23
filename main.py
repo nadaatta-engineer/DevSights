@@ -102,3 +102,18 @@ def analyze_error_logs(data: FailureLog):
     return {
         "success": True
     }
+
+@app.get("/analyses")
+def get_analyses():
+
+    db = SessionLocal()
+
+    try:
+
+        analyses = db.query(Analysis).all()
+
+        return analyses
+
+    finally:
+
+        db.close()
