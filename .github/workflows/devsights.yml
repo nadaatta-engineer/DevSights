@@ -36,8 +36,10 @@ jobs:
       - name: Run tests
         id: tests
         continue-on-error: true
+        shell: bash
         run: |
           pytest 2>&1 | tee test_output.txt
+          exit ${PIPESTATUS[0]}
 
       # 5. Get commit information and send failure to DevSights
       - name: Send failure to DevSights
@@ -168,7 +170,6 @@ jobs:
           PY
 
       # 6. Keep the workflow failed
-      # if the user's tests failed
       - name: Mark workflow as failed
         if: steps.tests.outcome == 'failure'
         run: exit 1
