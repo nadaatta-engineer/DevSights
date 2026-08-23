@@ -41,7 +41,7 @@ jobs:
 
       # 5. Get commit information and send failure to DevSights
       - name: Send failure to DevSights
-        if: steps.tests.outcome == 'failure'
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
