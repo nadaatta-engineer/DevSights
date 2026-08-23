@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import CORSMiddleware
 from app.database import Base, SessionLocal, engine
 from app.models.analysis import Analysis
 from app.models.failure import FailureLog
@@ -11,6 +12,14 @@ import json
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 ai_analyzer = AIAnalyzer()
 
