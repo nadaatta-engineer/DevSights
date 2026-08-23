@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, SessionLocal, engine
 from app.models.analysis import Analysis
 from app.models.failure import FailureLog
